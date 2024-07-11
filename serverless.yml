@@ -1,0 +1,40 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: fightclub
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: emailapi
+service: my-python-serverless-project
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-south-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+      Resource: "*"
+  
+
+functions:
+  sendEmail:
+    handler: handler.send_email
+    events:
+      - http:
+          path: send-email
+          method: post
+
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: false
+    requirementsFile: requirements.txt
+
+  serverless-offline:
+    httpPort: 3000
+    noPrependStageInUrl: true
+    environment:
+      IS_OFFLINE: "true"
